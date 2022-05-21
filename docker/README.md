@@ -14,4 +14,6 @@ make install
 * 体积优化问题，是否要用alpine
 * 每个命令都会导致多一层镜像，CMD，RUN，ADD等。docker history可以查看层数
 * -e参数会通过设置环境变量传递参数
-
+* 构建和运行命令
+docker build -t ftp .
+docker run -d -p 2121 -p 30000-30009:30000-30009 -e FTP_USER_NAME=gm -e FTP_USER_PASS=gmp@123 -e FTP_USER_HOME=/home/gm ftp:
