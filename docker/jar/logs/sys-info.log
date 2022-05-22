@@ -1,0 +1,2 @@
+2022-05-22 21:22:38 [main] INFO  com.rvtkk.RvtkkApplication - Starting RvtkkApplication v2.3.0 on LAPTOP-3JM2PND7 with PID 5179 (/root/development/tool/docker/jar/app/pms-framework.jar started by root in /root/development/tool/docker/jar)
+2022-05-22 21:22:38 [main] INFO  com.rvtkk.RvtkkApplication - The following profiles are active: test
