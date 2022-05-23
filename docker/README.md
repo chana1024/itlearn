@@ -2,6 +2,7 @@
 /configure --with-http_stub_status_module --with-http_ssl_module 
 make 
 make install 
+* docker挂载，内容以宿主机为主。即宿主机会覆盖容器内的目录内容
 * 默认安装位置为/usr/local/nginx
 * 编译完后，整个默认nginx目录即是二进制运行包，拷走即可运行
 * ldd nginx可以查看nginx需要哪些动态链接库
