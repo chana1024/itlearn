@@ -1,0 +1,1 @@
+docker run -dit -p 81:80 -v /root/development/pmsExten/docker/nginx/volume/conf:/etc/nginx -v /root/development/pmsExten/docker/nginx/volume/www:/www -v/root/development/pmsExten/docker/nginx/volume/logs:/var/log/nginx ui
