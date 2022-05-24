@@ -14,9 +14,12 @@ make install
 * 容器里的主进程要显示运行,主进程退出，容器也会退出
 * multi stage多阶段构建
 * 网路问题，容器如何localhost访问主机
+    linux下设置docker run --net=host(只对linux有用)
+    mac,window,wsl for docker desk, host.docker.internal
 * 体积优化问题，是否要用alpine
 * 每个命令都会导致多一层镜像，CMD，RUN，ADD等。docker history可以查看层数
 * -e参数会通过设置环境变量传递参数
 * 构建和运行命令
 docker build -t ftp .
 docker run -d -p 2121 -p 30000-30009:30000-30009 -e FTP_USER_NAME=gm -e FTP_USER_PASS=gmp@123 -e FTP_USER_HOME=/home/gm ftp:
+* nginx proxy_pass 没有uri,会直接拼接location path,有uri才会替换掉location path
