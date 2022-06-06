@@ -1,0 +1,55 @@
+version: "2"
+services:
+  reids:
+    image: redis:latest
+    container_name: pms-redis
+    ports:
+      - "6379:6379"
+    volumes:
+      - "./redis/volume/data:/data"
+    command: redis-server --appendonly yes --requirepass "JetLinks@redis"
+  ftp:
+    image: ftp
+    container_name: pms-ftp
+    ports:
+      - "21:21"
+      - "81:81"
+      - "30000-30009:30000-30009"
+    environment:
+      FTP_USER_NAME: gm  
+      FTP_USER_PASS: gmp@123
+      FTP_USER_HOME: /home/gm
+    volumes:
+      - "./ftp/volume/nginx/conf:/usr/local/nginx/conf"
+      - "./ftp/volume/ftphome:/home/gm"
+  kkfileview:
+    image: keking/kkfileview
+    container_name: pms-kkfileview
+    ports:
+      - "8012:8012"
+  ui:
+    image: ui
+    container_name: pms-ui
+    ports:
+      - "80:80"
+    environment:
+      hostip: host.docker.internal  
+      FTP_USER_PASS: gmp@123
+    volumes:
+      - "./nginx/volume/conf:/etc/nginx"
+      - "./nginx/volume/logs:/var/log/nginx"
+      - "./nginx/volume/www:/www"
+  jar:
+    image: jar 
+    container_name: pms-jar
+    ports:
+      - "8080:8080"
+    volumes:
+      - "./jar/volume/app:/usr/local/app"
+      - "./nginx/volume/logs:/var/log/nginx"
+      - "./nginx/volume/www:/www"
+    depends_on:
+      - redis
+      - ftp
+      - mysql
+    command: java -jar -Dspring.profile.active=test pms-framework.jar
