@@ -1,13 +1,39 @@
 version: "2"
 services:
-  reids:
+  mysql:
+    image: mysql:8.0.29
+    container_name: pms-mysql
+    environment:
+      # 时区上海
+      TZ: Asia/Shanghai
+      # root 密码
+      MYSQL_ROOT_PASSWORD: gmp@123
+      # 初始化数据库(后续的初始化sql会在这个库执行)
+      MYSQL_DATABASE: gm_pms
+    ports:
+      - "3306:3306"
+    volumes:
+      # 数据挂载
+      - ./mysql/volume/data/:/var/lib/mysql/
+      # 配置挂载
+      - ./mysql/volume/conf/:/etc/mysql/
+    command:
+      # 将mysql8.0默认密码策略 修改为 原先 策略 (mysql8.0对其默认策略做了更改 会导致密码无法匹配)
+      --default-authentication-plugin=mysql_native_password
+      --character-set-server=utf8mb4
+      --collation-server=utf8mb4_general_ci
+      --explicit_defaults_for_timestamp=true
+      --lower_case_table_names=1
+    privileged: true
+    restart: always
+  redis:
     image: redis:latest
     container_name: pms-redis
     ports:
       - "6379:6379"
     volumes:
       - "./redis/volume/data:/data"
-    command: redis-server --appendonly yes --requirepass "JetLinks@redis"
+    command: redis-server --appendonly yes --requirepass "gmp@123"
   ftp:
     image: ftp
     container_name: pms-ftp
@@ -16,7 +42,7 @@ services:
       - "81:81"
       - "30000-30009:30000-30009"
     environment:
-      FTP_USER_NAME: gm  
+      FTP_USER_NAME: gm
       FTP_USER_PASS: gmp@123
       FTP_USER_HOME: /home/gm
     volumes:
@@ -27,29 +53,30 @@ services:
     container_name: pms-kkfileview
     ports:
       - "8012:8012"
+  jar:
+    image: jar
+    container_name: pms-jar
+    ports:
+      - "8080:8080"
+    volumes:
+      - "./jar/volume/app:/usr/local/app"
+    links:
+      - redis:redis_server
+      - ftp:ftp_server
+    depends_on:
+      - redis
+      - ftp
+      - pms-mysql
+    command: java -jar -Dspring.profiles.active=land pms-framework.jar
   ui:
     image: ui
     container_name: pms-ui
     ports:
       - "80:80"
     environment:
-      hostip: host.docker.internal  
+      hostip: host.docker.internal
       FTP_USER_PASS: gmp@123
     volumes:
       - "./nginx/volume/conf:/etc/nginx"
       - "./nginx/volume/logs:/var/log/nginx"
       - "./nginx/volume/www:/www"
-  jar:
-    image: jar 
-    container_name: pms-jar
-    ports:
-      - "8080:8080"
-    volumes:
-      - "./jar/volume/app:/usr/local/app"
-      - "./nginx/volume/logs:/var/log/nginx"
-      - "./nginx/volume/www:/www"
-    depends_on:
-      - redis
-      - ftp
-      - mysql
-    command: java -jar -Dspring.profile.active=test pms-framework.jar
